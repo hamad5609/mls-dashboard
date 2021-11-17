@@ -10,7 +10,7 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.get('/', (req, res) => {
-    res.send('Api Home');
+    res.send("api home");
 })
 app.use('/user', UserRouter);
 app.use('/post', PostsRouter);

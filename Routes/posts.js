@@ -22,14 +22,24 @@ const upload = multer({ storage: storage, fileFilter: filterImage });
 router.get('/', verify, async (req, res) => {
     try {
         const getPost = await Post.find();
+        // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_JSON);
         res.send(getPost);
+
     } catch (err) {
-        res.send(err)
+        res.status(400).send(err)
     }
 })
-router.post('/', verify, upload.array('postImage', 12), async (req, res) => {
-    console.log(req.files);
+router.get('/:postId', verify, async (req, res) => {
+    try {
+        const getpostById = await Post.findById(req.params.postId);
+        res.send(getpostById);
+    } catch (err) {
+        res.status(400).send(err)
+    }
+})
+router.post('/', verify, upload.array("propertyImage", 12), async (req, res) => {
     const imgFiles = req.files;
+    console.log(imgFiles);
     const post = new Post({
         propertyImage: imgFiles,
         address: req.body.address,
@@ -41,7 +51,32 @@ router.post('/', verify, upload.array('postImage', 12), async (req, res) => {
         const savePost = await post.save();
         res.send(savePost);
     } catch (err) {
-        res.send(err)
+        res.status(400).send(err)
+    }
+})
+router.patch('/:postId', verify, upload.array("propertyImage", 12), verify, async (req, res) => {
+    console.log(req.body);
+    const imgFiles = req.files;
+    var post = {
+        propertyImage: imgFiles,
+        address: req.body.address,
+        bed: req.body.bed,
+        bath: req.body.bath,
+        garage: req.body.garage
+    }
+    try {
+        const updatePost = await Post.updateOne({ _id: req.params.postId }, { $set: post });
+        res.send(updatePost);
+    } catch (err) {
+        res.status(400).send(err)
+    }
+})
+router.delete('/:postId', verify, async (req, res) => {
+    try {
+        const removePost = await Post.remove({ _id: req.params.postId });
+        res.send(removePost);
+    } catch (err) {
+        res.status(400).send(err)
     }
 })
 
