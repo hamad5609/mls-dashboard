@@ -19,7 +19,7 @@ const filterImage = (req, file, cb) => {
 }
 const upload = multer({ storage: storage, fileFilter: filterImage });
 
-router.get('/', verify, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const getPost = await Post.find();
         // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_JSON);
