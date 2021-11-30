@@ -42,6 +42,9 @@ router.post('/', verify, upload.array("propertyImage", 12), async (req, res) => 
     console.log(imgFiles);
     const post = new Post({
         propertyImage: imgFiles,
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
         address: req.body.address,
         bed: req.body.bed,
         bath: req.body.bath,
@@ -59,6 +62,9 @@ router.patch('/:postId', verify, upload.array("propertyImage", 12), verify, asyn
     const imgFiles = req.files;
     var post = {
         propertyImage: imgFiles,
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
         address: req.body.address,
         bed: req.body.bed,
         bath: req.body.bath,

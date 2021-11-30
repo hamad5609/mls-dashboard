@@ -5,6 +5,23 @@ const postSchema = new mongoose.Schema({
         type: Object,
         required: true,
     },
+    title: {
+        type: String,
+        required: true,
+        max: 255,
+        min: 3
+    },
+    price: {
+        type: String,
+        required: true,
+        max: 255,
+        min: 3
+    },
+    description: {
+        type: String,
+        required: true,
+        min: 3
+    },
     address: {
         type: String,
         required: true,
