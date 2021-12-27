@@ -2,6 +2,8 @@ const router = require('express').Router();
 const verify = require('./verifyToken');
 const Post = require('../Modules/postValue');
 const multer = require('multer');
+const path = require("path");
+const fs = require('fs');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -29,7 +31,7 @@ router.get('/', async (req, res) => {
         res.status(400).send(err)
     }
 })
-router.get('/:postId', verify, async (req, res) => {
+router.get('/:postId', async (req, res) => {
     try {
         const getpostById = await Post.findById(req.params.postId);
         res.send(getpostById);
@@ -37,7 +39,7 @@ router.get('/:postId', verify, async (req, res) => {
         res.status(400).send(err)
     }
 })
-router.post('/', verify, upload.array("propertyImage", 12), async (req, res) => {
+router.post('/', verify, upload.array("propertyImage", 12000), async (req, res) => {
     const imgFiles = req.files;
     console.log(imgFiles);
     const post = new Post({
@@ -45,6 +47,11 @@ router.post('/', verify, upload.array("propertyImage", 12), async (req, res) => 
         title: req.body.title,
         price: req.body.price,
         description: req.body.description,
+        city: req.body.city,
+        country: req.body.country,
+        countryState: req.body.countryState,
+        purpose: req.body.purpose,
+        category: req.body.category,
         address: req.body.address,
         bed: req.body.bed,
         bath: req.body.bath,
@@ -57,13 +64,20 @@ router.post('/', verify, upload.array("propertyImage", 12), async (req, res) => 
         res.status(400).send(err)
     }
 })
-router.patch('/:postId', verify, upload.array("propertyImage", 12), verify, async (req, res) => {
-    console.log(req.body);
+router.patch('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
+    var editPost = await Post.findById(req.params.postId)
+    console.log(editPost);
+    console.log(req.files);
     const imgFiles = req.files;
     var post = {
         propertyImage: imgFiles,
         title: req.body.title,
         price: req.body.price,
+        city: req.body.city,
+        country: req.body.country,
+        countryState: req.body.countryState,
+        purpose: req.body.purpose,
+        category: req.body.category,
         description: req.body.description,
         address: req.body.address,
         bed: req.body.bed,
@@ -73,17 +87,28 @@ router.patch('/:postId', verify, upload.array("propertyImage", 12), verify, asyn
     try {
         const updatePost = await Post.updateOne({ _id: req.params.postId }, { $set: post });
         res.send(updatePost);
+        // res.send(editPost);
     } catch (err) {
         res.status(400).send(err)
     }
 })
-router.delete('/:postId', verify, async (req, res) => {
+
+router.delete('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
+    // res.send(req.files)
     try {
+        var imgFile = await Post.findById(req.params.postId);
         const removePost = await Post.remove({ _id: req.params.postId });
+        imgFile.propertyImage.map((fileimg) => {
+            let imgPath = path.join(__dirname, '../') + fileimg.path;
+            console.log(imgPath)
+            fs.unlinkSync(imgPath);
+        });
         res.send(removePost);
+        res.send(imgFile);
     } catch (err) {
         res.status(400).send(err)
     }
 })
+
 
 module.exports = router;

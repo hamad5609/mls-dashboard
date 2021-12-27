@@ -22,6 +22,31 @@ const postSchema = new mongoose.Schema({
         required: true,
         min: 3
     },
+    city: {
+        type: String,
+        // required: true,
+        min: 3
+    },
+    country: {
+        type: Object,
+        // required: true,
+        min: 3
+    },
+    countryState: {
+        type: String,
+        // required: true,
+        min: 3
+    },
+    purpose: {
+        type: String,
+        required: true,
+        min: 3
+    },
+    category: {
+        type: String,
+        required: true,
+        min: 3
+    },
     address: {
         type: String,
         required: true,
