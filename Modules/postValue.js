@@ -24,7 +24,6 @@ const postSchema = new mongoose.Schema({
     },
     city: {
         type: String,
-        // required: true,
         min: 3
     },
     country: {
