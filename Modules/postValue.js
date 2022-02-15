@@ -24,17 +24,12 @@ const postSchema = new mongoose.Schema({
     },
     city: {
         type: String,
-        min: 3
     },
     country: {
-        type: Object,
-        // required: true,
-        min: 3
+        type: String,
     },
     countryState: {
         type: String,
-        // required: true,
-        min: 3
     },
     purpose: {
         type: String,
@@ -52,23 +47,21 @@ const postSchema = new mongoose.Schema({
         max: 255,
         min: 3
     },
+    area: {
+        type: String,
+        required: true,
+    },
     bed: {
         type: String,
         required: true,
-        max: 255,
-        min: 3
     },
     bath: {
         type: String,
         required: true,
-        max: 1024,
-        min: 3
     },
     garage: {
         type: String,
         required: true,
-        max: 1024,
-        min: 3
     },
 });
 

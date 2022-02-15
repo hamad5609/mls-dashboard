@@ -31,6 +31,39 @@ router.get('/', async (req, res) => {
         res.status(400).send(err)
     }
 })
+router.get('/porpertylist', async (req, res) => {
+    const { page } = req.query;
+    try {
+        const Limit = 3;
+        const startingIndex = (Number(page) - 1) * Limit;
+        const total = await Post.countDocuments({});
+        const numberOfPages = Math.ceil(total / Limit);
+        const getPost = await Post.find().sort({ _id: -1 }).limit(Limit).skip(startingIndex);
+        res.status(200).send({ data: getPost, currentPage: Number(page), numberOfPages: numberOfPages });
+
+    } catch (err) {
+        res.status(400).send(err)
+    }
+})
+router.get('/search', async (req, res) => {
+    const { searchQuery, bath, city, price, area, bed } = req.query;
+    try {
+        const search = new RegExp(searchQuery, 'i');
+        const postData = await Post.find({
+            $and: [
+                (search ? ({ address: search }) : {}),
+                (bath ? ({ bath: bath }) : {}),
+                (city ? ({ city: city }) : {}),
+                (price ? ({ price: price }) : {}),
+                (area ? ({ area: area }) : {}),
+                (bed ? ({ bed: bed }) : {}),
+            ]
+        });
+        res.status(200).send({ data: postData });
+    } catch (error) {
+        res.status(404).send(err);
+    }
+})
 router.get('/:postId', async (req, res) => {
     try {
         const getpostById = await Post.findById(req.params.postId);
@@ -53,6 +86,7 @@ router.post('/', verify, upload.array("propertyImage", 12000), async (req, res) 
         purpose: req.body.purpose,
         category: req.body.category,
         address: req.body.address,
+        area: req.body.area,
         bed: req.body.bed,
         bath: req.body.bath,
         garage: req.body.garage
@@ -80,6 +114,7 @@ router.patch('/:postId', upload.array("propertyImage", 12000), verify, async (re
         category: req.body.category,
         description: req.body.description,
         address: req.body.address,
+        area: req.body.area,
         bed: req.body.bed,
         bath: req.body.bath,
         garage: req.body.garage

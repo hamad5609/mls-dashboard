@@ -40,7 +40,7 @@ app.delete('/multiupload', (req, res) => {
     // }
 })
 
-mongoose.connect(process.env.DATA_BASE_AUTH, () => console.log('Database created'))
+mongoose.connect(process.env.DATA_BASE_AUTH, () => console.log(`Database created and running on ${PORT} port`))
 
 
 app.listen(PORT)
