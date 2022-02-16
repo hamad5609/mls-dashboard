@@ -9,7 +9,6 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true,
         max: 255,
-        min: 3
     },
     price: {
         type: String,
@@ -31,21 +30,17 @@ const postSchema = new mongoose.Schema({
     countryState: {
         type: String,
     },
-    purpose: {
+    propertyType: {
         type: String,
         required: true,
-        min: 3
     },
     category: {
         type: String,
         required: true,
-        min: 3
     },
     address: {
         type: String,
         required: true,
-        max: 255,
-        min: 3
     },
     area: {
         type: String,

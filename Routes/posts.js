@@ -46,16 +46,20 @@ router.get('/porpertylist', async (req, res) => {
     }
 })
 router.get('/search', async (req, res) => {
-    const { searchQuery, bath, city, price, area, bed } = req.query;
+    const { searchQuery, category, type, bath, city, price, area, bed } = req.query;
     try {
         const search = new RegExp(searchQuery, 'i');
+        const Categories = new RegExp(category, 'i');
+        const PropertyType = new RegExp(type, 'i');
         const postData = await Post.find({
             $and: [
                 (search ? ({ address: search }) : {}),
+                (Categories ? ({ category: Categories }) : {}),
+                (PropertyType ? ({ propertyType: PropertyType }) : {}),
                 (bath ? ({ bath: bath }) : {}),
                 (city ? ({ city: city }) : {}),
-                (price ? ({ price: price }) : {}),
-                (area ? ({ area: area }) : {}),
+                (price ? ({ price: { $gte: 0, $lte: Number(price) } }) : {}),
+                (area ? ({ area: { $gte: 0, $lte: Number(area) } }) : {}),
                 (bed ? ({ bed: bed }) : {}),
             ]
         });
@@ -83,7 +87,7 @@ router.post('/', verify, upload.array("propertyImage", 12000), async (req, res) 
         city: req.body.city,
         country: req.body.country,
         countryState: req.body.countryState,
-        purpose: req.body.purpose,
+        propertyType: req.body.propertyType,
         category: req.body.category,
         address: req.body.address,
         area: req.body.area,
@@ -110,7 +114,7 @@ router.patch('/:postId', upload.array("propertyImage", 12000), verify, async (re
         city: req.body.city,
         country: req.body.country,
         countryState: req.body.countryState,
-        purpose: req.body.purpose,
+        propertyType: req.body.propertyType,
         category: req.body.category,
         description: req.body.description,
         address: req.body.address,
