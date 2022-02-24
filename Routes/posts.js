@@ -100,7 +100,6 @@ Route.patch('/:postId', upload.array("propertyImage", 12000), async (req, res) =
     const _id = req.params.postId;
     const imgFiles = req.files;
     const body = req.body;
-    console.log(req.userId);
     var post = {
         ...body,
         propertyImage: imgFiles,
