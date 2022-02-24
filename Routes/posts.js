@@ -1,9 +1,10 @@
-const router = require('express').Router();
-const verify = require('./verifyToken');
-const Post = require('../Modules/postValue');
-const multer = require('multer');
-const path = require("path");
-const fs = require('fs');
+import router from 'express';
+import verify from './verifyToken.js';
+import Post from '../Modules/postValue.js';
+import multer from 'multer';
+import path from "path";
+import fs from 'fs';
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -21,7 +22,9 @@ const filterImage = (req, file, cb) => {
 }
 const upload = multer({ storage: storage, fileFilter: filterImage });
 
-router.get('/', async (req, res) => {
+const Route = router.Router();
+
+Route.get('/', async (req, res) => {
     try {
         const getPost = await Post.find();
         // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_JSON);
@@ -31,7 +34,7 @@ router.get('/', async (req, res) => {
         res.status(400).send(err)
     }
 })
-router.get('/porpertylist', async (req, res) => {
+Route.get('/porpertylist', async (req, res) => {
     const { page } = req.query;
     try {
         const Limit = 3;
@@ -45,7 +48,7 @@ router.get('/porpertylist', async (req, res) => {
         res.status(400).send(err)
     }
 })
-router.get('/search', async (req, res) => {
+Route.get('/search', async (req, res) => {
     const { searchQuery, category, type, bath, city, price, area, bed } = req.query;
     try {
         const search = new RegExp(searchQuery, 'i');
@@ -68,71 +71,49 @@ router.get('/search', async (req, res) => {
         res.status(404).send(err);
     }
 })
-router.get('/:postId', async (req, res) => {
+Route.get('/:postId', async (req, res) => {
     try {
         const getpostById = await Post.findById(req.params.postId);
-        res.send(getpostById);
+        res.send(getpostById)
     } catch (err) {
         res.status(400).send(err)
     }
 })
-router.post('/', verify, upload.array("propertyImage", 12000), async (req, res) => {
+Route.post('/', verify, upload.array("propertyImage", 12000), async (req, res) => {
     const imgFiles = req.files;
-    console.log(imgFiles);
+    const body = req.body;
+
     const post = new Post({
-        propertyImage: imgFiles,
-        title: req.body.title,
-        price: req.body.price,
-        description: req.body.description,
-        city: req.body.city,
-        country: req.body.country,
-        countryState: req.body.countryState,
-        propertyType: req.body.propertyType,
-        category: req.body.category,
-        address: req.body.address,
-        area: req.body.area,
-        bed: req.body.bed,
-        bath: req.body.bath,
-        garage: req.body.garage
+        ...body,
+        propertyImage: imgFiles
     })
+    console.log(body);
     try {
         const savePost = await post.save();
+
         res.send(savePost);
     } catch (err) {
         res.status(400).send(err)
     }
 })
-router.patch('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
-    var editPost = await Post.findById(req.params.postId)
-    console.log(editPost);
-    console.log(req.files);
+Route.patch('/:postId', upload.array("propertyImage", 12000), async (req, res) => {
+    const _id = req.params.postId;
     const imgFiles = req.files;
+    const body = req.body;
+    console.log(req.userId);
     var post = {
+        ...body,
         propertyImage: imgFiles,
-        title: req.body.title,
-        price: req.body.price,
-        city: req.body.city,
-        country: req.body.country,
-        countryState: req.body.countryState,
-        propertyType: req.body.propertyType,
-        category: req.body.category,
-        description: req.body.description,
-        address: req.body.address,
-        area: req.body.area,
-        bed: req.body.bed,
-        bath: req.body.bath,
-        garage: req.body.garage
     }
     try {
-        const updatePost = await Post.updateOne({ _id: req.params.postId }, { $set: post });
+        const updatePost = await Post.findByIdAndUpdate(_id, post, { new: true });
         res.send(updatePost);
-        // res.send(editPost);
     } catch (err) {
         res.status(400).send(err)
     }
 })
 
-router.delete('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
+Route.delete('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
     // res.send(req.files)
     try {
         var imgFile = await Post.findById(req.params.postId);
@@ -150,4 +131,4 @@ router.delete('/:postId', upload.array("propertyImage", 12000), verify, async (r
 })
 
 
-module.exports = router;
+export default Route;

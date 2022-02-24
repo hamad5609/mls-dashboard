@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express';
+import UserRouter from './Routes/user.js';
+import PostsRouter from './Routes/posts.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import fs from 'fs';
+
 const app = express();
-const UserRouter = require('./Routes/user');
-const PostsRouter = require('./Routes/posts');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const fs = require('fs')
 var PORT = process.env.PORT || 8000;
 dotenv.config();
 app.use(cors());

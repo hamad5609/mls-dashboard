@@ -1,12 +1,15 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../Modules/usersValue');
-const { registrationValidate, loginValidate } = require('../validation');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const verify = require('./verifyToken');
+import express from 'express';
 
-router.get('/', verify, async (req, res) => {
+import User from '../Modules/usersValue.js';
+import { registrationValidate, loginValidate } from '../validation.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import verify from './verifyToken.js';
+import { Roles, AuthRoles } from '../Roles/index.js';
+
+const Route = express.Router();
+
+Route.get('/', AuthRoles(Roles.ADMIN), async (req, res) => {
     try {
         const getUser = await User.find();
         res.send(getUser);
@@ -15,7 +18,7 @@ router.get('/', verify, async (req, res) => {
     }
 
 })
-router.post('/register', async (req, res) => {
+Route.post('/register', async (req, res) => {
     // res.send('User Router');
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -28,7 +31,8 @@ router.post('/register', async (req, res) => {
         lastname: req.body.lastname,
         name: req.body.name,
         email: req.body.email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: 'ADMIN_ROLE',
     })
     try {
         const savedUser = await user.save();
@@ -38,7 +42,7 @@ router.post('/register', async (req, res) => {
     }
 
 })
-router.post('/login', async (req, res) => {
+Route.post('/login', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
     // const hashedPassword = await bcrypt.hash(req.body.password, salt);
     const { error } = loginValidate(req.body);
@@ -52,4 +56,4 @@ router.post('/login', async (req, res) => {
     res.header('auth_token', token).send({ user, token })
 })
 
-module.exports = router;
+export default Route;
