@@ -37,7 +37,7 @@ Route.get('/', async (req, res) => {
 Route.get('/porpertylist', async (req, res) => {
     const { page } = req.query;
     try {
-        const Limit = 3;
+        const Limit = 1;
         const startingIndex = (Number(page) - 1) * Limit;
         const total = await Post.countDocuments({});
         const numberOfPages = Math.ceil(total / Limit);
@@ -79,15 +79,13 @@ Route.get('/:postId', async (req, res) => {
         res.status(400).send(err)
     }
 })
-Route.post('/', verify, upload.array("propertyImage", 12000), async (req, res) => {
-    const imgFiles = req.files;
+Route.post('/', verify, async (req, res) => {
     const body = req.body;
-
     const post = new Post({
         ...body,
-        propertyImage: imgFiles
+        createdAt: new Date().toISOString(),
     })
-    console.log(body);
+
     try {
         const savePost = await post.save();
 
@@ -96,13 +94,11 @@ Route.post('/', verify, upload.array("propertyImage", 12000), async (req, res) =
         res.status(400).send(err)
     }
 })
-Route.patch('/:postId', upload.array("propertyImage", 12000), async (req, res) => {
+Route.patch('/:postId', async (req, res) => {
     const _id = req.params.postId;
-    const imgFiles = req.files;
     const body = req.body;
     var post = {
         ...body,
-        propertyImage: imgFiles,
     }
     try {
         const updatePost = await Post.findByIdAndUpdate(_id, post, { new: true });
@@ -113,7 +109,6 @@ Route.patch('/:postId', upload.array("propertyImage", 12000), async (req, res) =
 })
 
 Route.delete('/:postId', upload.array("propertyImage", 12000), verify, async (req, res) => {
-    // res.send(req.files)
     try {
         var imgFile = await Post.findById(req.params.postId);
         const removePost = await Post.remove({ _id: req.params.postId });

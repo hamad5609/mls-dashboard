@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema({
     propertyImage: {
-        type: Object,
-        required: true,
+        type: [Object],
+        default: [],
     },
+    user: { type: Object, immutable: true },
     title: {
         type: String,
         required: true,
@@ -58,6 +59,10 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    createdAt: {
+        type: Date,
+        default: new Date()
+    }
 });
 
 const Post = mongoose.model('Post', postSchema);
