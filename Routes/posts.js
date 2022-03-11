@@ -37,7 +37,7 @@ Route.get('/', async (req, res) => {
 Route.get('/porpertylist', async (req, res) => {
     const { page } = req.query;
     try {
-        const Limit = 1;
+        const Limit = 6;
         const startingIndex = (Number(page) - 1) * Limit;
         const total = await Post.countDocuments({});
         const numberOfPages = Math.ceil(total / Limit);
